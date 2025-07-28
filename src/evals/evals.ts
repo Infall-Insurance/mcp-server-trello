@@ -112,11 +112,20 @@ const delete_labelEval: EvalFunction = {
     }
 };
 
+const get_card_historyEval: EvalFunction = {
+    name: 'get_card_history Evaluation',
+    description: 'Evaluates the get_card_history tool functionality',
+    run: async () => {
+        const result = await grade(openai("gpt-4"), "Please get the history of the card with ID 'card123' and show the last 10 actions.");
+        return JSON.parse(result);
+    }
+};
+
 const config: EvalConfig = {
     model: openai("gpt-4"),
-    evals: [get_cards_by_list_idEval, get_listsEval, get_recent_activityEvalFunction, add_card_to_listEval, update_card_detailsEval, get_board_membersEval, assign_member_to_cardEval, remove_member_from_cardEval, get_board_labelsEval, create_labelEval, update_labelEval, delete_labelEval]
+    evals: [get_cards_by_list_idEval, get_listsEval, get_recent_activityEvalFunction, add_card_to_listEval, update_card_detailsEval, get_board_membersEval, assign_member_to_cardEval, remove_member_from_cardEval, get_board_labelsEval, create_labelEval, update_labelEval, delete_labelEval, get_card_historyEval]
 };
   
 export default config;
   
-export const evals = [get_cards_by_list_idEval, get_listsEval, get_recent_activityEvalFunction, add_card_to_listEval, update_card_detailsEval, get_board_membersEval, assign_member_to_cardEval, remove_member_from_cardEval, get_board_labelsEval, create_labelEval, update_labelEval, delete_labelEval];
+export const evals = [get_cards_by_list_idEval, get_listsEval, get_recent_activityEvalFunction, add_card_to_listEval, update_card_detailsEval, get_board_membersEval, assign_member_to_cardEval, remove_member_from_cardEval, get_board_labelsEval, create_labelEval, update_labelEval, delete_labelEval, get_card_historyEval];

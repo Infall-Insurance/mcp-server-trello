@@ -299,3 +299,20 @@ export function validateDeleteLabelRequest(args: Record<string, unknown>): {
     labelId: validateString(args.labelId, 'labelId'),
   };
 }
+
+export function validateGetCardHistoryRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  cardId: string;
+  limit?: number;
+  filter?: string;
+} {
+  if (!args.cardId) {
+    throw new McpError(ErrorCode.InvalidParams, 'cardId is required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    cardId: validateString(args.cardId, 'cardId'),
+    limit: validateOptionalNumber(args.limit),
+    filter: validateOptionalString(args.filter),
+  };
+}

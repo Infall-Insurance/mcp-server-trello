@@ -470,4 +470,25 @@ export class TrelloClient {
       await this.axiosInstance.delete(`/labels/${labelId}`);
     });
   }
+
+  /**
+   * Get card history/actions
+   */
+  async getCardHistory(
+    boardId: string | undefined,
+    cardId: string,
+    limit?: number,
+    filter?: string
+  ): Promise<TrelloAction[]> {
+    return this.handleRequest(async () => {
+      const params: Record<string, any> = {};
+      if (limit) params.limit = limit;
+      if (filter) params.filter = filter;
+      
+      const response = await this.axiosInstance.get(`/cards/${cardId}/actions`, {
+        params,
+      });
+      return response.data;
+    });
+  }
 }

@@ -599,6 +599,22 @@ Delete a label from a board.
 }
 ```
 
+### get_card_history
+
+Get the history/actions of a specific card.
+
+```typescript
+{
+  name: 'get_card_history',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    cardId: string,    // ID of the card to get history for
+    limit?: number,    // Optional: Number of actions to fetch (default: all)
+    filter?: string    // Optional: Filter actions by type (e.g., "all", "updateCard:idList", "addAttachmentToCard", "commentCard", "updateCard:name", "updateCard:desc", "updateCard:due", "addMemberToCard", "removeMemberFromCard", "addLabelToCard", "removeLabelFromCard")
+  }
+}
+```
+
 ## Integration Examples
 
 ### 🎨 Pairing with Ideogram MCP Server

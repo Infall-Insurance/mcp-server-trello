@@ -29,6 +29,7 @@ import {
   validateCreateLabelRequest,
   validateUpdateLabelRequest,
   validateDeleteLabelRequest,
+  validateGetCardHistoryRequest,
 } from './validators.js';
 
 class TrelloServer {
@@ -522,6 +523,32 @@ class TrelloServer {
             required: ['labelId'],
           },
         },
+        {
+          name: 'get_card_history',
+          description: 'Get the history/actions of a specific card',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              cardId: {
+                type: 'string',
+                description: 'ID of the card to get history for',
+              },
+              limit: {
+                type: 'number',
+                description: 'Optional: Number of actions to fetch (default: all)',
+              },
+              filter: {
+                type: 'string',
+                description: 'Optional: Filter actions by type (e.g., "all", "updateCard:idList", "addAttachmentToCard", "commentCard", "updateCard:name", "updateCard:desc", "updateCard:due", "addMemberToCard", "removeMemberFromCard", "addLabelToCard", "removeLabelFromCard")',
+              },
+            },
+            required: ['cardId'],
+          },
+        },
       ],
     }));
 
@@ -788,6 +815,19 @@ class TrelloServer {
             await this.trelloClient.deleteLabel(validArgs.boardId, validArgs.labelId);
             return {
               content: [{ type: 'text', text: 'Label deleted successfully' }],
+            };
+          }
+
+          case 'get_card_history': {
+            const validArgs = validateGetCardHistoryRequest(args);
+            const history = await this.trelloClient.getCardHistory(
+              validArgs.boardId,
+              validArgs.cardId,
+              validArgs.limit,
+              validArgs.filter
+            );
+            return {
+              content: [{ type: 'text', text: JSON.stringify(history, null, 2) }],
             };
           }
 
