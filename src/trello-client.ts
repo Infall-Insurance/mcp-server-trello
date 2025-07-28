@@ -7,6 +7,8 @@ import {
   TrelloAttachment,
   TrelloBoard,
   TrelloWorkspace,
+  TrelloMember,
+  TrelloLabel,
 } from './types.js';
 import { createTrelloRateLimiters } from './rate-limiter.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
@@ -347,6 +349,125 @@ export class TrelloClient {
         name: name || 'Image Attachment',
       });
       return response.data;
+    });
+  }
+
+  /**
+   * Get all members of a board
+   */
+  async getBoardMembers(boardId?: string): Promise<TrelloMember[]> {
+    const effectiveBoardId = boardId || this.activeConfig.boardId || this.defaultBoardId;
+    if (!effectiveBoardId) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        'boardId is required when no default board is configured'
+      );
+    }
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.get(`/boards/${effectiveBoardId}/members`);
+      return response.data;
+    });
+  }
+
+  /**
+   * Assign a member to a card
+   */
+  async assignMemberToCard(
+    boardId: string | undefined,
+    cardId: string,
+    memberId: string
+  ): Promise<TrelloCard> {
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.post(`/cards/${cardId}/idMembers`, {
+        value: memberId,
+      });
+      return response.data;
+    });
+  }
+
+  /**
+   * Remove a member from a card
+   */
+  async removeMemberFromCard(
+    boardId: string | undefined,
+    cardId: string,
+    memberId: string
+  ): Promise<TrelloCard> {
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.delete(`/cards/${cardId}/idMembers/${memberId}`);
+      return response.data;
+    });
+  }
+
+  /**
+   * Get all labels of a board
+   */
+  async getBoardLabels(boardId?: string): Promise<TrelloLabel[]> {
+    const effectiveBoardId = boardId || this.activeConfig.boardId || this.defaultBoardId;
+    if (!effectiveBoardId) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        'boardId is required when no default board is configured'
+      );
+    }
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.get(`/boards/${effectiveBoardId}/labels`);
+      return response.data;
+    });
+  }
+
+  /**
+   * Create a new label on a board
+   */
+  async createLabel(
+    boardId: string | undefined,
+    name: string,
+    color?: string
+  ): Promise<TrelloLabel> {
+    const effectiveBoardId = boardId || this.activeConfig.boardId || this.defaultBoardId;
+    if (!effectiveBoardId) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        'boardId is required when no default board is configured'
+      );
+    }
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.post('/labels', {
+        name,
+        color,
+        idBoard: effectiveBoardId,
+      });
+      return response.data;
+    });
+  }
+
+  /**
+   * Update a label
+   */
+  async updateLabel(
+    boardId: string | undefined,
+    labelId: string,
+    name?: string,
+    color?: string
+  ): Promise<TrelloLabel> {
+    return this.handleRequest(async () => {
+      const response = await this.axiosInstance.put(`/labels/${labelId}`, {
+        name,
+        color,
+      });
+      return response.data;
+    });
+  }
+
+  /**
+   * Delete a label
+   */
+  async deleteLabel(
+    boardId: string | undefined,
+    labelId: string
+  ): Promise<void> {
+    return this.handleRequest(async () => {
+      await this.axiosInstance.delete(`/labels/${labelId}`);
     });
   }
 }

@@ -22,6 +22,13 @@ import {
   validateSetActiveBoardRequest,
   validateSetActiveWorkspaceRequest,
   validateListBoardsInWorkspaceRequest,
+  validateGetBoardMembersRequest,
+  validateAssignMemberRequest,
+  validateRemoveMemberRequest,
+  validateGetBoardLabelsRequest,
+  validateCreateLabelRequest,
+  validateUpdateLabelRequest,
+  validateDeleteLabelRequest,
 } from './validators.js';
 
 class TrelloServer {
@@ -377,6 +384,144 @@ class TrelloServer {
             required: [],
           },
         },
+        {
+          name: 'get_board_members',
+          description: 'Get all members of a specific board',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+            },
+            required: [],
+          },
+        },
+        {
+          name: 'assign_member_to_card',
+          description: 'Assign a member to a specific card',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              cardId: {
+                type: 'string',
+                description: 'ID of the card to assign the member to',
+              },
+              memberId: {
+                type: 'string',
+                description: 'ID of the member to assign to the card',
+              },
+            },
+            required: ['cardId', 'memberId'],
+          },
+        },
+        {
+          name: 'remove_member_from_card',
+          description: 'Remove a member from a specific card',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              cardId: {
+                type: 'string',
+                description: 'ID of the card to remove the member from',
+              },
+              memberId: {
+                type: 'string',
+                description: 'ID of the member to remove from the card',
+              },
+            },
+            required: ['cardId', 'memberId'],
+          },
+        },
+        {
+          name: 'get_board_labels',
+          description: 'Get all labels of a specific board',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+            },
+            required: [],
+          },
+        },
+        {
+          name: 'create_label',
+          description: 'Create a new label on a board',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the label',
+              },
+              color: {
+                type: 'string',
+                description: 'Color of the label (e.g., "red", "blue", "green", "yellow", "orange", "purple", "pink", "sky", "lime", "black", "null")',
+              },
+            },
+            required: ['name'],
+          },
+        },
+        {
+          name: 'update_label',
+          description: 'Update an existing label',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              labelId: {
+                type: 'string',
+                description: 'ID of the label to update',
+              },
+              name: {
+                type: 'string',
+                description: 'New name for the label',
+              },
+              color: {
+                type: 'string',
+                description: 'New color for the label',
+              },
+            },
+            required: ['labelId'],
+          },
+        },
+        {
+          name: 'delete_label',
+          description: 'Delete a label from a board',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              boardId: {
+                type: 'string',
+                description: 'ID of the Trello board (uses default if not provided)',
+              },
+              labelId: {
+                type: 'string',
+                description: 'ID of the label to delete',
+              },
+            },
+            required: ['labelId'],
+          },
+        },
       ],
     }));
 
@@ -571,6 +716,79 @@ class TrelloServer {
             } catch (error) {
               return this.handleErrorResponse(error);
             }
+          }
+
+          case 'get_board_members': {
+            const validArgs = validateGetBoardMembersRequest(args);
+            const members = await this.trelloClient.getBoardMembers(validArgs.boardId);
+            return {
+              content: [{ type: 'text', text: JSON.stringify(members, null, 2) }],
+            };
+          }
+
+          case 'assign_member_to_card': {
+            const validArgs = validateAssignMemberRequest(args);
+            const card = await this.trelloClient.assignMemberToCard(
+              validArgs.boardId,
+              validArgs.cardId,
+              validArgs.memberId
+            );
+            return {
+              content: [{ type: 'text', text: JSON.stringify(card, null, 2) }],
+            };
+          }
+
+          case 'remove_member_from_card': {
+            const validArgs = validateRemoveMemberRequest(args);
+            const card = await this.trelloClient.removeMemberFromCard(
+              validArgs.boardId,
+              validArgs.cardId,
+              validArgs.memberId
+            );
+            return {
+              content: [{ type: 'text', text: JSON.stringify(card, null, 2) }],
+            };
+          }
+
+          case 'get_board_labels': {
+            const validArgs = validateGetBoardLabelsRequest(args);
+            const labels = await this.trelloClient.getBoardLabels(validArgs.boardId);
+            return {
+              content: [{ type: 'text', text: JSON.stringify(labels, null, 2) }],
+            };
+          }
+
+          case 'create_label': {
+            const validArgs = validateCreateLabelRequest(args);
+            const label = await this.trelloClient.createLabel(
+              validArgs.boardId,
+              validArgs.name,
+              validArgs.color
+            );
+            return {
+              content: [{ type: 'text', text: JSON.stringify(label, null, 2) }],
+            };
+          }
+
+          case 'update_label': {
+            const validArgs = validateUpdateLabelRequest(args);
+            const label = await this.trelloClient.updateLabel(
+              validArgs.boardId,
+              validArgs.labelId,
+              validArgs.name,
+              validArgs.color
+            );
+            return {
+              content: [{ type: 'text', text: JSON.stringify(label, null, 2) }],
+            };
+          }
+
+          case 'delete_label': {
+            const validArgs = validateDeleteLabelRequest(args);
+            await this.trelloClient.deleteLabel(validArgs.boardId, validArgs.labelId);
+            return {
+              content: [{ type: 'text', text: 'Label deleted successfully' }],
+            };
           }
 
           default:

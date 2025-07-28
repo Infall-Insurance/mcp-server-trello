@@ -498,6 +498,107 @@ Get information about the currently active board.
 }
 ```
 
+### get_board_members
+
+Get all members of a specific board.
+
+```typescript
+{
+  name: 'get_board_members',
+  arguments: {
+    boardId?: string  // Optional: ID of the board (uses default if not provided)
+  }
+}
+```
+
+### assign_member_to_card
+
+Assign a member to a specific card.
+
+```typescript
+{
+  name: 'assign_member_to_card',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    cardId: string,    // ID of the card to assign the member to
+    memberId: string   // ID of the member to assign to the card
+  }
+}
+```
+
+### remove_member_from_card
+
+Remove a member from a specific card.
+
+```typescript
+{
+  name: 'remove_member_from_card',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    cardId: string,    // ID of the card to remove the member from
+    memberId: string   // ID of the member to remove from the card
+  }
+}
+```
+
+### get_board_labels
+
+Get all labels of a specific board.
+
+```typescript
+{
+  name: 'get_board_labels',
+  arguments: {
+    boardId?: string  // Optional: ID of the board (uses default if not provided)
+  }
+}
+```
+
+### create_label
+
+Create a new label on a board.
+
+```typescript
+{
+  name: 'create_label',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    name: string,      // Name of the label
+    color?: string     // Optional: Color of the label (e.g., "red", "blue", "green", "yellow", "orange", "purple", "pink", "sky", "lime", "black", "null")
+  }
+}
+```
+
+### update_label
+
+Update an existing label.
+
+```typescript
+{
+  name: 'update_label',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    labelId: string,   // ID of the label to update
+    name?: string,     // Optional: New name for the label
+    color?: string     // Optional: New color for the label
+  }
+}
+```
+
+### delete_label
+
+Delete a label from a board.
+
+```typescript
+{
+  name: 'delete_label',
+  arguments: {
+    boardId?: string,  // Optional: ID of the board (uses default if not provided)
+    labelId: string    // ID of the label to delete
+  }
+}
+```
+
 ## Integration Examples
 
 ### 🎨 Pairing with Ideogram MCP Server

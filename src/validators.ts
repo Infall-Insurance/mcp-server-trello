@@ -212,3 +212,90 @@ export function validateListBoardsInWorkspaceRequest(args: Record<string, unknow
     workspaceId: validateString(args.workspaceId, 'workspaceId'),
   };
 }
+
+export function validateGetBoardMembersRequest(args: Record<string, unknown>): { boardId?: string } {
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+  };
+}
+
+export function validateAssignMemberRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  cardId: string;
+  memberId: string;
+} {
+  if (!args.cardId || !args.memberId) {
+    throw new McpError(ErrorCode.InvalidParams, 'cardId and memberId are required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    cardId: validateString(args.cardId, 'cardId'),
+    memberId: validateString(args.memberId, 'memberId'),
+  };
+}
+
+export function validateRemoveMemberRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  cardId: string;
+  memberId: string;
+} {
+  if (!args.cardId || !args.memberId) {
+    throw new McpError(ErrorCode.InvalidParams, 'cardId and memberId are required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    cardId: validateString(args.cardId, 'cardId'),
+    memberId: validateString(args.memberId, 'memberId'),
+  };
+}
+
+export function validateGetBoardLabelsRequest(args: Record<string, unknown>): { boardId?: string } {
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+  };
+}
+
+export function validateCreateLabelRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  name: string;
+  color?: string;
+} {
+  if (!args.name) {
+    throw new McpError(ErrorCode.InvalidParams, 'name is required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    name: validateString(args.name, 'name'),
+    color: validateOptionalString(args.color),
+  };
+}
+
+export function validateUpdateLabelRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  labelId: string;
+  name?: string;
+  color?: string;
+} {
+  if (!args.labelId) {
+    throw new McpError(ErrorCode.InvalidParams, 'labelId is required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    labelId: validateString(args.labelId, 'labelId'),
+    name: validateOptionalString(args.name),
+    color: validateOptionalString(args.color),
+  };
+}
+
+export function validateDeleteLabelRequest(args: Record<string, unknown>): {
+  boardId?: string;
+  labelId: string;
+} {
+  if (!args.labelId) {
+    throw new McpError(ErrorCode.InvalidParams, 'labelId is required');
+  }
+  return {
+    boardId: args.boardId ? validateString(args.boardId, 'boardId') : undefined,
+    labelId: validateString(args.labelId, 'labelId'),
+  };
+}
